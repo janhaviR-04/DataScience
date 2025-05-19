@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VIT Projects</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f5f8fa;
+      color: #333;
+    }
+    .nav-pills .nav-link.active {
+      background-color: #0d6efd;
+    }
+    .card {
+      background-color: #fff;
+      border: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container my-5">
+  <h2 class="text-center mb-4">VIT Course & EDI Projects</h2>
+
+  <ul class="nav nav-pills mb-3 justify-content-center" id="projectTabs">
+    <li class="nav-item">
+      <a class="nav-link active" data-bs-toggle="pill" href="#courseProjects">Course Projects</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-bs-toggle="pill" href="#ediProjects">EDI Projects</a>
+    </li>
+  </ul>
+
+  <div class="tab-content">
+    <!-- Course Projects -->
+    <div class="tab-pane container active" id="courseProjects">
+      <form id="courseForm" class="mb-3">
+        <div class="mb-2">
+          <input type="text" class="form-control" placeholder="Enter Course Project Title" id="courseTitle" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Course Project</button>
+      </form>
+      <div id="courseList" class="row g-2"></div>
+    </div>
+
+    <!-- EDI Projects -->
+    <div class="tab-pane container fade" id="ediProjects">
+      <form id="ediForm" class="mb-3">
+        <div class="mb-2">
+          <input type="text" class="form-control" placeholder="Enter EDI Project Title" id="ediTitle" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Add EDI Project</button>
+      </form>
+      <div id="ediList" class="row g-2"></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Utility function to load and display projects
+ function loadProjects(type) {
+  const projects = JSON.parse(localStorage.getItem(type)) || [];
+  const listId = type === 'courseProjects' ? '#courseList' : '#ediList';
+  const listContainer = $(listId);
+  listContainer.empty();
+  projects.forEach((title, index) => {
+    const card = `<div class="col-md-4"><div class="card p-2">${title}</div></div>`;
+    listContainer.append(card);
+  });
+}
+
+  // Add Course Project
+  $('#courseForm').on('submit', function (e) {
+    e.preventDefault();
+    const title = $('#courseTitle').val().trim();
+    if (title) {
+      const projects = JSON.parse(localStorage.getItem('courseProjects')) || [];
+      projects.push(title);
+      localStorage.setItem('courseProjects', JSON.stringify(projects));
+      $('#courseTitle').val('');
+      loadProjects('courseProjects');
+    }
+  });
+
+  // Add EDI Project
+  $('#ediForm').on('submit', function (e) {
+    e.preventDefault();
+    const title = $('#ediTitle').val().trim();
+    if (title) {
+      const projects = JSON.parse(localStorage.getItem('ediProjects')) || [];
+      projects.push(title);
+      localStorage.setItem('ediProjects', JSON.stringify(projects));
+      $('#ediTitle').val('');
+      loadProjects('ediProjects');
+    }
+  });
+
+  // Initial Load
+  $(document).ready(function () {
+    loadProjects('courseProjects');
+    loadProjects('ediProjects');
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>BFS & DFS Visualizer</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f0f2f5;
+    }
+    .container {
+      margin-top: 50px;
+      max-width: 700px;
+    }
+    textarea {
+      resize: none;
+    }
+    pre {
+      background-color: #fff;
+      padding: 10px;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <div class="container text-center">
+    <h3 class="mb-4">Breadth First & Depth First Search</h3>
+
+    <div class="mb-3 text-start">
+      <label for="graphInput" class="form-label">Enter Graph (Format: node: neighbors)</label>
+      <textarea id="graphInput" class="form-control" rows="5" placeholder="1: 2,3&#10;2: 4&#10;3:&#10;4:">1: 2,3
+2: 4
+3:
+4:</textarea>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col">
+        <input type="text" id="startNode" class="form-control" placeholder="Start Node">
+      </div>
+      <div class="col">
+        <input type="text" id="targetNode" class="form-control" placeholder="Target Node">
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <button class="btn btn-primary me-2" onclick="runBFS()">Run BFS</button>
+      <button class="btn btn-secondary" onclick="runDFS()">Run DFS</button>
+    </div>
+
+    <div class="text-start">
+      <h5>Traversal Result:</h5>
+      <pre id="output"></pre>
+    </div>
+  </div>
+
+  <script>
+    function parseGraph(inputText) {
+      const lines = inputText.trim().split("\n");
+      const graph = {};
+
+      for (let line of lines) {
+        const [node, neighbors] = line.split(":");
+        const key = node.trim();
+        const values = neighbors ? neighbors.split(",").map(n => n.trim()).filter(n => n !== "") : [];
+        graph[key] = values;
+      }
+
+      return graph;
+    }
+
+    function runBFS() {
+      const graph = parseGraph(document.getElementById('graphInput').value);
+      const start = document.getElementById('startNode').value.trim();
+      const target = document.getElementById('targetNode').value.trim();
+      const visited = new Set();
+      const queue = [[start]];
+      const traversal = [];
+
+      while (queue.length > 0) {
+        const path = queue.shift();
+        const node = path[path.length - 1];
+
+        if (!visited.has(node)) {
+          visited.add(node);
+          traversal.push(node);
+
+          if (node === target) {
+            displayResult(traversal, `✅ Target ${target} found using BFS!`);
+            return;
+          }
+
+          const neighbors = graph[node] || [];
+          for (let neighbor of neighbors) {
+            queue.push([...path, neighbor]);
+          }
+        }
+      }
+
+      displayResult(traversal, `❌ Target ${target} not found.`);
+    }
+
+    function runDFS() {
+      const graph = parseGraph(document.getElementById('graphInput').value);
+      const start = document.getElementById('startNode').value.trim();
+      const target = document.getElementById('targetNode').value.trim();
+      const visited = new Set();
+      const stack = [[start]];
+      const traversal = [];
+
+      while (stack.length > 0) {
+        const path = stack.pop();
+        const node = path[path.length - 1];
+
+        if (!visited.has(node)) {
+          visited.add(node);
+          traversal.push(node);
+
+          if (node === target) {
+            displayResult(traversal, `✅ Target ${target} found using DFS!`);
+            return;
+          }
+
+          const neighbors = graph[node] || [];
+          for (let neighbor of [...neighbors].reverse()) {
+            stack.push([...path, neighbor]);
+          }
+        }
+      }
+
+      displayResult(traversal, `❌ Target ${target} not found.`);
+    }
+
+    function displayResult(traversal, message) {
+      document.getElementById('output').textContent =
+        `Traversal Order: ${traversal.join(" → ")}\n${message}`;
+    }
+  </script>
+</body>
+</html>
